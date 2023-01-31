@@ -3,7 +3,7 @@ public class Application {
     System.out.println("ENGL 1051");
     System.out.println("---------");
     System.out.println("CSCI 1933");
-    System.out.println("---------");
+    System.out.println("---------");  
     System.out.println("CSCI 1935");
     System.out.println("---------");
     System.out.println("CSCI 2021");
