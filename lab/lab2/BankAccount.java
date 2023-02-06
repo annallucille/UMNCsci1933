@@ -101,7 +101,7 @@ public class BankAccount {
     public void transfer(BankAccount other, String enteredUser, String enteredPassword, double amount){
         if(other.username.equals(enteredUser) && password.equals(enteredPassword) && balance >= amount) {
             other.deposit(eneteredUser, other.password, amount);
-            account.withdral(account.username, enteredPassword, amount);
+            withdral(account.username, enteredPassword, amount);
         }
     }
 }

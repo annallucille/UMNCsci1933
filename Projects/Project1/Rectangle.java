@@ -11,11 +11,12 @@ public class Rectangle {
     private Color color = Color.black;
 
 // main constructor 
-    public Rectangle(double a, double b, double h, double w){     
+    public Rectangle(double a, double b, double h, double w, Color c){     
         xPos = a;
         yPos = b;
         height = h;
         width = w;
+        color = c;
     }
     public Rectangle() {}
 
@@ -44,6 +45,9 @@ public class Rectangle {
     }
     public double getHeight(){ // getting the height
         return height;
+    }
+    public double getWidth(){ // getting the height
+        return width;
     }
 
 // opperators 

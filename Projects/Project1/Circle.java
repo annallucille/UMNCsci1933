@@ -9,10 +9,11 @@ public class Circle {
     private Color color = Color.black;
 
 // main constructor 
-    public Circle(double a, double b, double r){     
+    public Circle(double a, double b, double r, Color c){     
         xPos = a;
         yPos = b;
         radius = r;
+        color = c;
     }
     public Circle() {}
 

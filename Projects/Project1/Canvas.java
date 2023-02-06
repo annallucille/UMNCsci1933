@@ -8,6 +8,8 @@ import java.util.ListIterator;
 import javax.swing.JApplet;
 import javax.swing.JFrame;
 
+
+
 public class Canvas extends JApplet {
 
 	
@@ -36,7 +38,7 @@ public class Canvas extends JApplet {
 		JFrame f = new JFrame("Canvas");
 		f.addWindowListener(new WindowAdapter(){
 			public void windowClosing(WindowEvent e) {System.exit(0);}
-		});
+		}); 
 		height = h;
 		width = w;
 		f.setSize(width, height);

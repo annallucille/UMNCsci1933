@@ -11,11 +11,12 @@ public class Triangle {
     private Color color = Color.black;
 
 // main constructor 
-    public Triangle(double a, double b, double h, double w){     
+    public Triangle(double a, double b, double h, double w, Color c){     
         xPos = a;
         yPos = b;
         height = h;
         width =w;
+        color = c;
     }
     public Triangle() {}
 
@@ -45,6 +46,10 @@ public class Triangle {
     public double getHeight(){ // getting the height
         return height;
     }
+    public double getWidth(){ // getting the height
+        return width;
+    }
+
 
 // opperators 
     public double calculatePerimeter(){ // calculate perimeter
