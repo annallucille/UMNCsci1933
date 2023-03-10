@@ -18,16 +18,16 @@ public class Matrix {
         }
     }
     public Matrix transpose(){
-        Matrix newMatrix = new Matrix(nrows,ncols);
-        for(int i = 0; i<=nrows-2; i++){
-            for(int j = 0; j<= ncols-2; j++)
+        Matrix newMatrix = new Matrix(ncols,nrows);
+        for(int i = 0; i<=nrows-1; i++){
+            for(int j = 0; j<= ncols-1; j++)
                 newMatrix.matrix[j][i] = matrix[i][j];
         }
         return newMatrix;
     }
 
     public String toString(){
-        String s = "\0";
+        String s = "";
         for(int i = 0; i<=nrows-1; i++){
             for(int j = 0; j<= ncols-1; j++){
                 s += String.valueOf((int)matrix[i][j]) + " ";
@@ -37,7 +37,7 @@ public class Matrix {
         return s;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) { 
         int[][] array = {{1,1,1,1,1},{0,1,2,3,4},{0,1,4,9,16},{0,1,8,27,64}};
 
         Matrix matrixA = new Matrix(array);

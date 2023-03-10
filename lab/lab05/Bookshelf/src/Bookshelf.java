@@ -33,7 +33,7 @@ public class Bookshelf {
 
 
     public String toString(){
-        String s = "\0";
+        String s = "";
         for (int i =0; i<= size; i++){
            s = s + books[i].toString()+"\n";
         }
