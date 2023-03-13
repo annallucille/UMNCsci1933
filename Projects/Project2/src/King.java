@@ -11,10 +11,7 @@ public class King {
         Piece endPiece = board.getPiece(endRow, endCol);
         int x = java.lang.Math.abs(this.row - endRow) + java.lang.Math.abs(this.col - endCol);
         if(board.verifyAdjacent(this.row, this.col, endRow, endCol) && x != 0){
-            if (endPiece == null || endPiece.getIsBlack() != this.isBlack) {
-                return true;
-            }
-            return false;
+            return board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack);
         }
         return false;
     }

@@ -7,13 +7,8 @@ public class Bishop {
     }
 
     public boolean isMoveLegal(Board board,int endRow, int endCol) {
-        Piece endPiece = board.getPiece(endRow, endCol);
         if (board.verifyDiagonal(this.row, this.col, endRow, endCol) ) {
-            if (endPiece == null)
-                return true;
-            else if (endPiece.getIsBlack() != this.isBlack)
-                return true;
-            return false;
+            return board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack);
         }
         return false;
     }

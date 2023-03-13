@@ -9,13 +9,9 @@ public class Queen {
     public boolean isMoveLegal(Board board, int endRow, int endCol) {
         Piece endPiece = board.getPiece(endRow, endCol);
         if (board.verifyHorizontal(this.row, this.col, endRow, endCol) || board.verifyVertical(this.row, this.col, endRow, endCol)) {
-            if (endPiece == null || endPiece.getIsBlack() != this.isBlack)
-                return true;
-            return false;
+            return endPiece == null || endPiece.getIsBlack() != this.isBlack;
         } else if (board.verifyDiagonal(this.row, this.col, endRow, endCol)) {
-            if (endPiece == null || endPiece.getIsBlack() != this.isBlack)
-                return true;
-            return false;
+            return board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack);
         }
         return false;
     }

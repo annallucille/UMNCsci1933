@@ -107,6 +107,7 @@ public class Piece {
      * Returns a string representation of the piece.
      * @return  A string representation of the piece.
      */
+
     public String toString() {
         return "" + this.character;
     }
