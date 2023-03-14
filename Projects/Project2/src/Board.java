@@ -136,28 +136,28 @@ public class Board {
     public boolean verifyDiagonal(int startRow, int startCol, int endRow, int endCol) {
         if (java.lang.Math.abs(startRow - endRow) == java.lang.Math.abs(startCol - endCol)){
             if(startRow-endRow <= 0 && startCol - endCol <= 0){
-                for( int i = 1; i==java.lang.Math.abs(startRow-endRow); i++) {
+                for( int i = 0; i==java.lang.Math.abs(startRow-endRow); i++) {
                     if (board[startRow + i][startCol + i] != null)
                         return false;
                 }
                 return true;
             }
             else if(startRow-endRow >= 0 && startCol - endCol <= 0){
-                for( int i = 1; i==java.lang.Math.abs(startRow-endRow); i++) {
+                for( int i = 0; i==java.lang.Math.abs(startRow-endRow); i++) {
                     if (board[startRow - i][startCol + i] != null)
                         return false;
                 }
                 return true;
             }
             else if(startRow-endRow >= 0 && startCol - endCol >= 0){
-                for( int i = 1; i==java.lang.Math.abs(startRow-endRow); i++) {
+                for( int i = 0; i==java.lang.Math.abs(startRow-endRow); i++) {
                     if (board[startRow - i][startCol - i] != null)
                         return false;
                 }
                 return true;
             }
             else if(startRow-endRow <= 0 && startCol - endCol >= 0){
-                for( int i = 1; i==java.lang.Math.abs(startRow-endRow); i++) {
+                for( int i = 0; i==java.lang.Math.abs(startRow-endRow); i++) {
                     if (board[startRow + i][startCol - i] != null)
                         return false;
                 }
