@@ -1,19 +1,16 @@
+import java.lang.Math;
 public class Knight {
     private int row;
     private int col;
     private boolean isBlack;
 
     public Knight(int row, int col, boolean isBlack){
-        row = row; col = col; isBlack = isBlack;
+        this.row = row; this.col = col; this.isBlack = isBlack;
     }
 
-    public boolean isMoveLegal(Board board,int endRow, int endCol) {
-        Piece endPiece = board.getPiece(endRow, endCol);
-        if (java.lang.Math.abs(endRow - this.row) == 2 && java.lang.Math.abs(endCol - this.col) == 1) {
-            return board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack);
-        }
-        else if(java.lang.Math.abs(endRow - this.row) == 1 && java.lang.Math.abs(endCol - this.col) == 2){
-            return board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack);
+    public boolean isMoveLegal(Board board, int endRow, int endCol) {
+        if(board.verifySourceAndDestination(this.row, this.col, endRow, endCol, this.isBlack)){
+            return (Math.abs(endRow - this.row) == 2 && Math.abs(endCol - this.col) == 1) || (Math.abs(endRow - this.row) == 1 && Math.abs(endCol - this.col) == 2);
         }
         return false;
     }

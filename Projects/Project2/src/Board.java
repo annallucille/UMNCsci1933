@@ -99,8 +99,8 @@ public class Board {
 
 
     public boolean verifyHorizontal(int startRow, int startCol, int endRow, int endCol) {
-        if(startRow - endRow ==0){
-            for( int j = Math.min(startCol, endCol); j < Math.max(startCol, endCol); j++){
+        if(startRow - endRow == 0){
+            for( int j = Math.min(startCol, endCol) + 1 ; j < Math.max(startCol, endCol); j++){
                 if(board[startRow][j] != null)
                     return false;
             }
@@ -112,25 +112,42 @@ public class Board {
 
     public boolean verifyVertical(int startRow, int startCol, int endRow, int endCol) {
         if (startCol - endCol == 0){
-            for(int i = Math.min(endRow, startRow); i < Math.max(startRow, endRow); i++ ){
+            for(int i = Math.min(endRow, startRow) + 1; i < Math.max(startRow, endRow); i++ ){
                 if (board[i][endCol] != null)
                     return false;
             }
             return true;
         }
-
         return false;
     }
 
-    public boolean verifyDiagonal(int startRow, int startCol, int endRow, int endCol){
-        if(Math.abs(endRow-startRow) == Math.abs(startCol -endCol)){
-            int j = Math.min(startCol, endCol);
-            for(int i = Math.min(startRow, endRow); i <Math.max(startRow, endRow); i++){
-                j++;
-                if(board[i][j] != null)
-                    return false;
+    public boolean verifyDiagonal(int startRow, int startCol, int endRow, int endCol) {
+        if (Math.abs(endRow - startRow) == Math.abs(startCol - endCol)) {
+            if (endRow - startRow == endCol - startCol) {
+                int i = Math.min(startRow, endRow) + 1;
+                for (int j = Math.min(startCol, endCol) + 1; j < Math.max(startCol, endCol); j++) {
+                    if (board[i][j] != null)
+                        return false;
+                    i++;
+                }
+                return true;
+            } else if (endRow - startRow > endCol - startCol) {
+                int i = Math.max(startRow, endRow) - 1;
+                for (int j = Math.min(startCol, endCol) + 1; j < Math.max(startCol, endCol); j++) {
+                    if (board[i][j] != null)
+                        return false;
+                    i--;
+                }
+                return true;
+            } else {
+                int j = Math.max(startCol, endCol) - 1;
+                for (int i = Math.min(startRow, endRow) + 1; i < Math.max(startRow, endRow); i++) {
+                    if (board[i][j] != null)
+                        return false;
+                    j--;
+                }
+                return true;
             }
-            return true;
         }
         return false;
     }
