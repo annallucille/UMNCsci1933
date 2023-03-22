@@ -1,9 +1,10 @@
 public class Bike implements Drivable{
+    
     public void movingBackward(){
-        System.out.print("Bike Moving Backward");
+        System.out.println("Bike Moving Backward");
     }
 
     public void movingForward() {
-        System.out.print("Bike Moving Forward");
+        System.out.println("Bike Moving Forward");
     }
 }

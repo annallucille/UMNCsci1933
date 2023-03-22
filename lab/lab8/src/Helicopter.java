@@ -11,18 +11,18 @@ public class Helicopter extends Vehicle{
     }
 
     public void movingBackward(){
-        System.out.print("Helicopter Moving Backward");
+        System.out.println("Helicopter Moving Backward");
     }
 
     public void movingForward() {
-        System.out.print("Helicopter Moving Forward");
+        System.out.println("Helicopter Moving Forward");
     }
 
     public void movingUp(){
-        System.out.print("Helicopter Moving Up");
+        System.out.println("Helicopter Moving Up");
     }
 
     public void movingDown(){
-        System.out.print("Helicopter Moving Down");
+        System.out.println("Helicopter Moving Down");
     }
 }

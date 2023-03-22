@@ -31,6 +31,16 @@ public abstract class Vehicle implements Comparable<Vehicle> {
     // This method is used for sorting vehicles by their MPG.
     // TODO: Implement this method for Milestone 3
     public int compareTo(Vehicle v) {
-         return 0;
+        if(this.getMPG() > v.getMPG()){
+            return 1;
+        }
+        else if(this.getMPG() < v.getMPG()){
+            return -1;
+        }
+        return 0;
+    }
+
+    public String toString(){
+        return this.getClass() + ":" + this.getMPG(); 
     }
 }
