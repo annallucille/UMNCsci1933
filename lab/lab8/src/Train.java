@@ -23,11 +23,11 @@ public class Train extends Vehicle{
 
 
     public void enteringStation(){
-        System.out.println("Train Entering Staion");
+        System.out.println("Train Entering Station");
     }
 
     public void leavingStation(){
-        System.out.println("Train Leaving Staion");
+        System.out.println("Train Leaving Station");
     }
 }
 
