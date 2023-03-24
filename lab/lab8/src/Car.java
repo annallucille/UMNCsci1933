@@ -3,10 +3,12 @@ public class Car extends Vehicle{
 
     public Car(double mpg){
         this.mpg = mpg;
+        nVehicles +=1;
     }
 
     public Car(){
         this.mpg = 30.0;
+        nVehicles +=1;
     }
 
     public double getMPG(){

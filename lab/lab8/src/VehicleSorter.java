@@ -12,6 +12,7 @@ public class VehicleSorter {
 		Car c3 = new Car(15.0);
 		Train t1 = new Train(380.0);
 		Train t2 = new Train(490.0);
+		Train t3 = new Train(290.0);
 
 
 		vehicles.add(c1);
@@ -19,11 +20,12 @@ public class VehicleSorter {
 		vehicles.add(c3);
 		vehicles.add(t2);
 		vehicles.add(t1);
+		vehicles.add(t3);
 
 
 
 
-
+		System.out.println("Total Number of Vehicles: " + Vehicle.getNumVehicles());
 		Collections.sort(vehicles);
 		for (Vehicle v : vehicles) {
 			System.out.println(v);

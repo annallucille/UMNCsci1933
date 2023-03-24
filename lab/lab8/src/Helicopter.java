@@ -3,6 +3,7 @@ public class Helicopter extends Vehicle{
 
     public Helicopter(){
         this.mpg = .3;
+        nVehicles +=1;
     }
 
 

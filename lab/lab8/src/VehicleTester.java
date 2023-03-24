@@ -8,6 +8,8 @@ public class VehicleTester {
         System.out.println(car);
         car.movingForward();
         car.movingBackward();
+        Car car2 = new Car(40.0);
+        Car car3 = new Car(80.0);
         System.out.println("Total Number of Vehicles: " + Vehicle.getNumVehicles());
     }
 }
