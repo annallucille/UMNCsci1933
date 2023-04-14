@@ -51,6 +51,8 @@ class Circle:
             return True
         else:
             return False
+        
+
 
 if __name__ == '__main__':
     x = Circle()
@@ -66,3 +68,11 @@ if __name__ == '__main__':
     
     y.setRadius(3)
     print(x.__eq__(y))
+    max_range = 1000
+    answers= []
+    numbers = range(1,max_range)
+    for number in numbers:
+        if int(number) % 3 == 0 or int(number) % 5 == 0:
+            answers.append(number)
+    print("\n",sum(answers)) 
+    
