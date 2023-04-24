@@ -45,5 +45,8 @@ public class ColorPath {
     }
 
 
-    public static void dfs(int[][] image, int[] start, int newColor){}
+    public static void dfs(int[][] image, int[] start, int newColor){
+        
+
+    }
 }
