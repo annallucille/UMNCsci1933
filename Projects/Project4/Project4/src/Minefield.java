@@ -24,13 +24,15 @@ public class qMinefield {
 
     private int rows;
     private int columns;
-    private int guesses;
+    private int guesses = 0;
+
+    private int flags;
     public qMinefield(int rows, int columns, int flags) {
         this.rows = rows;
         this.columns = columns;
         this.field = new Cell[rows][columns];
         this.intField = new int[rows][columns];
-        this.guesses = flags;
+        this.flags = flags;
         //this.createMines(rand.nextInt(rows), rand.nextInt(columns), this.mines);
 
     }
@@ -51,13 +53,6 @@ public class qMinefield {
                     intField[j+1][i-1] += 1;
                     intField[j+1][i] += 1;
                     intField[j+1][i+1] += 1;
-                }
-            }
-        }
-        for(int j = 0; j < rows; j++ ) {
-            for (int i = 0; i < columns; i++) {
-                if(!field[j][i].getStatus().equals("M")){
-                    field[j][i].setStatus(Integer.toString(intField[j][i]));
                 }
             }
         }
@@ -92,13 +87,18 @@ public class qMinefield {
      * @return boolean Return false if guess did not hit mine or if flag was placed, true if mine found.
      */
     public boolean guess(int x, int y, boolean flag) {
-        if(field[x][y].getStatus().equals("M")){
-            field[x][y].setStatus("F");
-            field[x][y].setRevealed(true);
-            return true;
+        if (flag) {
+            guesses += 1;
+            if(guesses <= flags) {
+                if (field[x][y].getStatus().equals("M")) {
+                    field[x][y].setStatus("F");
+                    field[x][y].setRevealed(true);
+                    return true;
+                }
+                field[x][y].setStatus("F");
+                return false;
+            }
         }
-        field[x][y].setStatus("F");
-        return false;
     }
     /**
      * gameOver
@@ -106,8 +106,14 @@ public class qMinefield {
      * @return boolean Return false if game is not over and squares have yet to be revealed, otheriwse return true.
      */
     public boolean gameOver() {
-        for(int i = 0; i < this.rows; i++)
-
+        for(int i = 0; i < this.rows; i++){
+            for(int j = 0; j < this.columns; j++){
+                if(field[i][j].getStatus().equals("M")){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -120,7 +126,6 @@ public class qMinefield {
      * @param y      The y value the user entered.
      */
     public void revealZeroes(int x, int y) {
-
 
     }
 
