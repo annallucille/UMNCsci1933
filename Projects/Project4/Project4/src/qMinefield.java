@@ -21,6 +21,7 @@ public class qMinefield {
     private int[][] intField;
     private Cell[][] field;
 
+    private int[][] mines;
     private int rows;
     private int columns;
     private int guesses = 0;
@@ -30,6 +31,7 @@ public class qMinefield {
         this.rows = rows;
         this.columns = columns;
         this.field = new Cell[rows][columns];
+        this.mines = new int[flags][2];
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++) {
                 field[i][j] = new Cell( false, "-");
@@ -46,18 +48,14 @@ public class qMinefield {
      */
     public void evaluateField() {
         Stack1Gen stack = new Stack1Gen<>();
-        for(int j = 0; j < rows; j++ ){
-            for(int i = 0; i < columns; i++){
-                if(field[j][i].getStatus().equals("M")){
-                    int[] arr = {i,j};
-                    stack = validNeighbors(arr, stack);
-                    while(!stack.isEmpty()){
-                        arr =  (int[])stack.pop();
-                        intField[arr[0]][arr[1]] += 1;
-                        }
-                    }
-                }
-            }
+        for(int i = 0; i < this.flags; i++){
+            evaluateHelper(mines[i], stack, mines[i][0], mines[i][1]);
+        }
+        while(!stack.isEmpty()){
+            int[] arr = (int[])stack.pop();
+            intField[arr[0]][arr[1]] +=1;
+        }
+
         for(int j = 0; j < rows; j++ ){
             for(int i = 0; i < columns; i++) {
                 if(!field[i][j].getStatus().equals("M"))
@@ -65,6 +63,14 @@ public class qMinefield {
             }
         }
     }
+
+    public void evaluateHelper(int [] arr, Stack1Gen stack, int x, int y){
+        if(arr[0] >= 0 && arr[0] < rows && arr[1] >= 0 && arr[1] < columns ){
+            stack.push(arr);
+        }
+
+    }
+
     /**
      * createMines
      *
@@ -73,13 +79,14 @@ public class qMinefield {
      * @param mines      Number of mines to place.
      */
     public void createMines(int x, int y, int mines) {
-        for(int i = 0; i <= mines; i++){
+        for(int i = 0; i < mines; i++){
             Random rand = new Random();
             int row = rand.nextInt(this.rows); int column = rand.nextInt(this.columns);
-            while(field[row][column].getStatus().equals("M") || row == x || column == y) {
+            while(field[row][column].getStatus().equals("M") && !field[row][column].getRevealed()) {
                 row = rand.nextInt(this.rows);
                 column = rand.nextInt(this.columns);
             }
+            this.mines[i][0] = row; this.mines[i][1] = column;
             field[row][column].setStatus("M");
         }
 
@@ -151,23 +158,31 @@ public class qMinefield {
      * @param y      The y value the user entered.
      */
     public void revealZeroes(int x, int y) {
-        field[x][y].setRevealed(true);
-        int[] arr = {x,y};
+        int[] arr = {x, y};
         Stack1Gen stack = new Stack1Gen();
         stack.push(arr);
-        while(!stack.isEmpty()) {
-            
-            if()
-            arr = (int[])stack.pop();
-            x = arr[0]; y = arr[1];
-            if(field[x][y].getStatus().equals("0")) {
-                field[x][y].setRevealed(true);
-
+        while (!stack.isEmpty()) {
+            arr = (int[]) stack.pop();
+            x = arr[0];
+            y = arr[1];
+            field[x][y].setRevealed(true);
+            for (int i = -1; i <= 1; i++) {
+                if (x + i >= 0 && x + i < rows && i != 0) {
+                    if (field[x + i][y].getStatus().equals("0")) {
+                        arr[0] = x + i;
+                        stack.push(arr);
+                    }
+                }
+                if (y + i >= 0 && y + i < columns && i != 0) {
+                    if (field[x][y + i].getStatus().equals("0")) {
+                        arr[1] = y + i;
+                        stack.push(arr);
+                    }
+                }
             }
-
-
         }
     }
+
 
     /**
      * revealMines
@@ -212,10 +227,11 @@ public class qMinefield {
      * @return String The string that is returned only has the squares that has been revealed to the user or that the user has guessed.
      */
     public String toString() {
-        String s = "";
+        String s = " ";
         for(int i = 0; i <= rows; i++){
-            if(i == 0){ s+= "";}
-            s += Integer.toString(i - 1) + " ";
+            if(i == 0){ s+= " ";}
+            else{
+            s += Integer.toString(i - 1) + " ";}
             for(int j = 0; j < columns; j++){
                 if(i == 0) { s += Integer.toString(j) + " "; }
                 else if(field[i-1][j].equals(null)){
@@ -229,7 +245,7 @@ public class qMinefield {
         }
         return s;
     }
-
+    /*
     public Stack1Gen validNeighbors(int[] arr, Stack1Gen stack){
         for(int i = -1; i <= 1; i++){
             int x = arr[0] +i;
@@ -245,7 +261,7 @@ public class qMinefield {
         }
         return stack;
     }
-    /*
+
     public Stack1Gen validNeighbors0(int[] arr, Stack1Gen stack) {
         for(int i = -1; i <= 1; i++) {
             int x = arr[0] + i;
