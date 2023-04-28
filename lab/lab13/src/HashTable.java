@@ -1,7 +1,7 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-
+/*
 public class HashTable<T>{
     NGen<T>[] hashTable;
 
@@ -91,3 +91,5 @@ public class HashTable<T>{
     public static void main(String args[]) {
     }
 }
+
+ */

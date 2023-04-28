@@ -1,23 +1,38 @@
 import java.util.Arrays;
 import java.lang.Math;
 public class BinaryTree {
+
+
     // TODO complete this method
     public static boolean isValid(int[] arr) {
         if((Math.log(arr.length) / Math.log(2)) % 1 == 0){
-            for(int i = 2; i < arr.length/2; i++){
+            /* for(int i = 2; i < arr.length/2; i++){
                 if(arr[2*i] > arr[i] || arr[2*i+1] < arr[i]){
                     return false;
                 }
-                if(i % 2 != 0 && arr[2*i] < arr[1]) {
+                if(i % 2 != 0 && arr[2*i] < arr[i - 1]) {
                     return false;
                 }
-                if(i % 2 == 0 && arr[2*i+1] > arr[1]){
+                if(i % 2 == 0 && arr[2*i+1] > arr[i - 1]){
                     return false;
                 }
             }
-            return true;
+            */
+            return isValidHelper(arr, arr[1], Integer.MAX_VALUE, 3) && isValidHelper(arr, Integer.MIN_VALUE, arr[1], 2);
         }
         return false;
+    }
+
+    public static boolean isValidHelper(int[] arr, int min, int max, int i){
+        if(i > arr.length-1){
+            return true;
+        }
+        if(arr[i] < max && arr[i] > min) {
+            return isValidHelper(arr, min, arr[i], 2*i) && isValidHelper(arr, arr[i], max, 2*i +1);
+        }
+        else{
+        return false;
+        }
     }
 
 

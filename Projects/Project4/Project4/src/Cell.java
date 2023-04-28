@@ -1,6 +1,6 @@
 public class Cell {
-    private boolean revealed;
-    private String status;
+    private boolean revealed = false;
+    private String status = "-";
     public Cell(boolean revealed, String status) {
         this.revealed = revealed;
         this.status = status;
