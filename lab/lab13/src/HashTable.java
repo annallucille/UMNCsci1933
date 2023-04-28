@@ -1,24 +1,49 @@
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Scanner;
-/*
+import java.lang.Math;
+
 public class HashTable<T>{
     NGen<T>[] hashTable;
+    int len;
 
     //TODO: Create a constructor that takes in a length and initializes the hash table array
 
-    public HashTable<T>(int length){
-        this.hashTable = new NGen<T>[length];
+    public HashTable(int length){
+        this.hashTable = new NGen[length];
+        this.len = length;
     }
 
     //TODO: Implement a hash function
     public int hash(T item) {
-        return -1;
+        String s = item.toString();
+        int index = 0;
+        for(int i = 0; i < s.length(); i++) {
+            int c = s.charAt(i);
+            index += c % (257);
+        }
+        index = index % this.len;
+        return index;
     }
 
     //TODO: Implement the add method which adds an item to the hash table using your hash function
     // Does NOT add duplicate items
     public void add(T item) {
+        NGen<T> newNode = new NGen<>(item, null);
+        int index = hash(item);
+        if(this.hashTable[index] == null){
+            hashTable[index] = newNode;
+        }
+        else{
+            NGen<T> temp = hashTable[index];
+            while(temp.getNext() != null){
+                if(temp.getData().equals(item)){
+                    return;
+                }
+                temp = temp.getNext();
+            }
+            temp.setNext(newNode);
+        }
     }
 
     // ** Already implemented -- no need to change **
@@ -89,7 +114,16 @@ public class HashTable<T>{
     //  Create another hash table, store all words from "gettysburg.txt", and call the display method
     //  Create a third hash table, store all words from "keywords.txt", and call the display method
     public static void main(String args[]) {
+        HashTable table1 = new HashTable(250);
+        table1.addWordsFromFile("canterbury.txt");
+        table1.display(true);
+
+        HashTable table2 = new HashTable(250);
+        table2.addWordsFromFile("gettysburg.txt");
+        table2.display(true);
+
+        HashTable table3 = new HashTable(250);
+        table3.addWordsFromFile("keywords.txt");
+        table3.display(true);
     }
 }
-
- */
