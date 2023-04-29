@@ -1,12 +1,13 @@
 import java.util.Random;
 
+
 public class qMinefield {
     /**
     Global Section
     */
     public static final String ANSI_YELLOW = "\u001B[33m";
     public static final String ANSI_BLUE_BRIGHT = "\u001b[34;1m";
-    public static final String ANSI_BLUE = "\u001b[34m";
+    public static final String ANSI_BLUE = "\u001b[35m";
     public static final String ANSI_RED_BRIGHT = "\u001b[31;1m";
     public static final String ANSI_RED = "\u001b[31m";
     public static final String ANSI_GREEN = "\u001b[32m";
@@ -18,15 +19,16 @@ public class qMinefield {
      * @param flags      Number of flags, should be equal to mines
      */
 
-    private int[][] intField;
+    private  int[][] intField;
     private Cell[][] field;
 
     private int[][] mines;
     private int rows;
     private int columns;
     private int guesses = 0;
-
+    private int minesRevealed = 0;
     private int flags;
+
     public qMinefield(int rows, int columns, int flags) {
         this.rows = rows;
         this.columns = columns;
@@ -41,6 +43,9 @@ public class qMinefield {
         this.flags = flags;
 
     }
+     public Cell[][] getField(){
+        return this.field;
+     }
     /**
      * evaluateField
      *
@@ -48,27 +53,48 @@ public class qMinefield {
      */
     public void evaluateField() {
         Stack1Gen stack = new Stack1Gen<>();
+        int x; int y; int[] temp = new int [2];
         for(int i = 0; i < this.flags; i++){
-            evaluateHelper(mines[i], stack, mines[i][0], mines[i][1]);
+            temp[0] = mines[i][0]; temp[1] = this.mines[i][1];
+            evaluateHelper(temp, stack, i);
         }
+        System.out.println("----");
         while(!stack.isEmpty()){
-            int[] arr = (int[])stack.pop();
-            intField[arr[0]][arr[1]] +=1;
+             y = (int) stack.pop();
+             x = (int) stack.pop();
+            intField[x][y] += 1;
         }
 
-        for(int j = 0; j < rows; j++ ){
-            for(int i = 0; i < columns; i++) {
-                if(!field[i][j].getStatus().equals("M"))
+
+    }
+
+    public void convert(){
+        for(int i = 0; i < rows; i++ ){
+            for(int j = 0; j < columns; j++) {
+                if(!field[i][j].getStatus().equals("M")) {
                     field[i][j].setStatus(Integer.toString(intField[i][j]));
+                }
             }
         }
     }
 
-    public void evaluateHelper(int [] arr, Stack1Gen stack, int x, int y){
-        if(arr[0] >= 0 && arr[0] < rows && arr[1] >= 0 && arr[1] < columns ){
-            stack.push(arr);
-        }
+    public void evaluateHelper(int[] arr, Stack1Gen stack, int k){
+        for(int i = -1; i <= 1; i++){
+            arr[0] += i;
+            for(int j = - 1; j <= 1; j++){
+                arr[1] += j;
+                if(verifyIndices(arr[0], arr[1])){
+                    stack.push(arr[0]);
+                    stack.push(arr[1]);
+                    arr[1] = this.mines[k][1];
+                }
+                else {
+                    arr[1] = this.mines[k][1];
 
+                }
+            }
+            arr[0] = this.mines[k][0];
+        }
     }
 
     /**
@@ -82,7 +108,7 @@ public class qMinefield {
         for(int i = 0; i < mines; i++){
             Random rand = new Random();
             int row = rand.nextInt(this.rows); int column = rand.nextInt(this.columns);
-            while(field[row][column].getStatus().equals("M") && !field[row][column].getRevealed()) {
+            while(field[row][column].getStatus().equals("M")  || column == y || row == x) {
                 row = rand.nextInt(this.rows);
                 column = rand.nextInt(this.columns);
             }
@@ -99,22 +125,28 @@ public class qMinefield {
      * @param x       The x value the user entered.
      * @param y       The y value the user entered.
      * @param flag    A boolean value that allows the user to place a flag on the corresponding square.
-     * @return boolean Return false if guess did not hit mine or if flag was placed, true if mine found.
+     *      * @return boolean Return false if guess did not hit mine or if flag was placed, true if mine found.
      */
     public boolean guess(int x, int y, boolean flag) {
         if (flag) {
-            guesses += 1;
-            if(guesses <= flags) {
+            if(guesses == flags){
+                gameOver();
+            }
+            if(guesses < flags) {
+                guesses += 1;
                 if (field[x][y].getStatus().equals("M")) {
                     field[x][y].setStatus("F");
                     field[x][y].setRevealed(true);
-                    return true;
+                    minesRevealed += 1;
+                    return false;
                 }
                 field[x][y].setStatus("F");
+                field[x][y].setRevealed(true);
                 return false;
             }
         }
         if(field[x][y].getStatus().equals("0")) {
+            field[x][y].setRevealed(true);
             revealZeroes(x,y);
             return false;
         }
@@ -123,8 +155,11 @@ public class qMinefield {
             return true;
         }
         field[x][y].setRevealed(true);
+        revealEdges(x,y);
         return false;
     }
+
+
     /**
      * gameOver
      *
@@ -134,14 +169,14 @@ public class qMinefield {
         if(flags == guesses){
             return true;
         }
+        if(minesRevealed == flags){
+            return true;
+        }
+
         for(int i = 0; i < this.rows; i++){
             for(int j = 0; j < this.columns; j++){
                 if(field[i][j].getStatus().equals("M") && !field[i][j].getRevealed()){
                     return false;
-                }
-                if(field[i][j].getStatus().equals("M") && field[i][j].getRevealed()) {
-                    revealMines(i,j);
-                    return true;
                 }
             }
         }
@@ -158,29 +193,54 @@ public class qMinefield {
      * @param y      The y value the user entered.
      */
     public void revealZeroes(int x, int y) {
-        int[] arr = {x, y};
         Stack1Gen stack = new Stack1Gen();
-        stack.push(arr);
-        while (!stack.isEmpty()) {
-            arr = (int[]) stack.pop();
-            x = arr[0];
-            y = arr[1];
-            field[x][y].setRevealed(true);
-            for (int i = -1; i <= 1; i++) {
-                if (x + i >= 0 && x + i < rows && i != 0) {
-                    if (field[x + i][y].getStatus().equals("0")) {
-                        arr[0] = x + i;
-                        stack.push(arr);
-                    }
-                }
-                if (y + i >= 0 && y + i < columns && i != 0) {
-                    if (field[x][y + i].getStatus().equals("0")) {
-                        arr[1] = y + i;
-                        stack.push(arr);
-                    }
+        stack.push(x);
+        stack.push(y);
+        getNeighbors(x,y,stack);
+        while(!stack.isEmpty()){
+            y = (int) stack.pop(); x = (int) stack.pop();
+            this.field[x][y].setRevealed(true);
+            revealEdges(x,y);
+            getNeighbors(x,y,stack);
+        }
+    }
+
+    public void revealEdges(int x, int y){
+        int c = x; int d = y;
+        for(int i = -1; i <= 1; i++) {
+            if(i == 0){continue;}
+            c += i;
+            if (!field[c][y].getRevealed() && !field[c][y].getStatus().equals("M")) {
+                field[c][y].setRevealed(true);
+            }
+            d += i;
+            if (!field[x][d].getRevealed() && !field[x][d].getStatus().equals("M")) {
+                field[x][d].setRevealed(true);
+            }
+            d = y; c = x;
+        }
+    }
+
+    public void getNeighbors(int x, int y, Stack1Gen stack){
+        int c = x; int z = y;
+        for(int i = -1; i <= 1; i++){
+            c += i;
+            if(verifyIndices(c, y)) {
+                if (this.field[c][y].getStatus().equals("0") && !this.field[c][y].getRevealed()) {
+                    stack.push(c);
+                    stack.push(y);
                 }
             }
+            z += i;
+            if(verifyIndices(x, z)) {
+                if(this.field[x][z].getStatus().equals("0") && !this.field[x][z].getRevealed()) {
+                    stack.push(x);
+                    stack.push(z);
+                }
+            }
+            c = x; z = y;
         }
+
     }
 
 
@@ -194,19 +254,39 @@ public class qMinefield {
      * @param y     The y value the user entered.
      */
     public void revealMines(int x, int y) {
-
+        Q1Gen queue = new Q1Gen<>(); int[] arr = {x, y}; Cell fieldPoint;
+        queue.add(this.field[x][y]);
+        getMine(arr, queue);
+        while(queue.length() != 0){
+            fieldPoint = (Cell) queue.remove();
+            fieldPoint.setRevealed(true);
+            if(fieldPoint.getStatus().equals("M")){
+                flags -= 1;
+            }
+        }
 
     }
 
-    /**
-     * revealStart
-     *
-     * @param x       The x value the user entered.
-     * @param y       The y value the user entered.
-     */
-    public void revealStart(int x, int y) {
+    public void getMine(int[] arr, Q1Gen queue){
+        int x = arr[0]; int y = arr[1];
+        for(int i = -1; i < 1; i++){
+            x += i;
+            for(int j = -1; j < 1; j++){
+                y += i;
+                if(verifyIndices(x,y)){
+                    queue.add(field[x][y]);
+                }
+                if(field[x][y].getStatus().equals("M")){
+                    return;
+                }
+                y = arr[1] ;
+            }
+            x = arr[0];
+        }
 
     }
+
+
     /**
      * printMinefield
      *
@@ -214,11 +294,43 @@ public class qMinefield {
      * *This method should print out when debug mode has been selected. 
      */
     public void printMinefield() {
-        for(int i = 0; i< rows; i++) {
+        String s  = "";
+        for(int i = 0; i< rows + 1; i++) {
+            if(i == 0){ s+= " ";}
+            else{
+                s += Integer.toString(i - 1) + " ";}
             for (int j = 0; j < columns; j++) {
-                System.out.print(field[i][j].getStatus());
+                if(i == 0) { s += Integer.toString(j) + " "; }
+                else {
+                    if(field[i-1][j].getRevealed()){
+                        String z = field[i - 1][j].getStatus();
+                        if (z.equals("0")) {
+                            s += ANSI_BLUE+ "0" +  ANSI_GREY_BG + " ";
+                        }
+                        if (field[i - 1][j].getStatus().equals("1")) {
+                            s += ANSI_BLUE_BRIGHT + "1" +  ANSI_GREY_BG + " ";
+                        }
+                        if(z.equals("2")){
+                            s += ANSI_GREEN + "2" +  ANSI_GREY_BG + " ";
+                        }
+                        if(z.equals("3")){
+                            s += ANSI_YELLOW + "3" +  ANSI_GREY_BG + " ";
+                        }
+                        if(z.equals("M")){
+                            s += ANSI_RED_BRIGHT+ "M" +  ANSI_GREY_BG + " ";
+                        }
+                        if(z.equals("F")){
+                            s += ANSI_RED + "F" +  ANSI_GREY_BG + " ";
+                        }
+                    }
+                    else {
+                        s += field[i - 1][j].getStatus() + " ";
+                    }
+                }
             }
+            s += "\n";
         }
+        System.out.println(s);
     }
 
     /**
@@ -237,7 +349,27 @@ public class qMinefield {
                 else if(field[i-1][j].equals(null)){
                     s += "-";
                 }
-                else if(field[i-1][j].getRevealed()){ s += field[i-1][j].getStatus() + " ";}
+                else if(field[i-1][j].getRevealed()) {
+                    String z = field[i - 1][j].getStatus();
+                    if (z.equals("0")) {
+                        s += ANSI_BLUE+ "0" +  ANSI_GREY_BG + " ";
+                    }
+                    if (field[i - 1][j].getStatus().equals("1")) {
+                        s += ANSI_BLUE_BRIGHT + "1" +  ANSI_GREY_BG + " ";
+                    }
+                    if(z.equals("2")){
+                        s += ANSI_GREEN + "2" +  ANSI_GREY_BG + " ";
+                    }
+                    if(z.equals("3")){
+                        s += ANSI_YELLOW + "3" +  ANSI_GREY_BG + " ";
+                    }
+                    if(z.equals("M")){
+                        s += ANSI_RED_BRIGHT+ "M" +  ANSI_GREY_BG + " ";
+                    }
+                    if(z.equals("F")){
+                        s += ANSI_RED + "F" +  ANSI_GREY_BG + " ";
+                    }
+                }
                 else {s += "- ";}
             }
             s += "\n";
@@ -245,46 +377,19 @@ public class qMinefield {
         }
         return s;
     }
-    /*
-    public Stack1Gen validNeighbors(int[] arr, Stack1Gen stack){
-        for(int i = -1; i <= 1; i++){
-            int x = arr[0] +i;
-            if(x < rows && x >= 0){
-                for (int j = -1; j <= 1; j++) {
-                    int y = arr[1] + i;
-                    if(y < columns && y >= 0){
-                        arr[0] = x; arr[1] = y;
-                        stack.push(arr);
-                    }
-                }
-            }
-        }
-        return stack;
-    }
 
-    public Stack1Gen validNeighbors0(int[] arr, Stack1Gen stack) {
-        for(int i = -1; i <= 1; i++) {
-            int x = arr[0] + i;
-            if (x < rows && x >= 0) {
-                for (int j = -1; j <= 1; j++) {
-                    int y = arr[1] + i;
-                    if (Math.abs(i) + Math.abs(j) > 1) {
-                        continue;
-                    }
-                    if (y < columns && y >= 0) {
-                        if (field[x][y].getStatus().equals("0") && !field[x][y].getRevealed()) {
-                            arr[0] = x;
-                            arr[1] = y;
-                            stack.push(arr);
-                            validNeighbors0(arr, stack);
-                        }
-                    }
-                }
+
+
+    public void revealBoard(){
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j< columns; j++){
+                field[i][j].setRevealed(true);
             }
         }
-        return stack;
     }
-    */
+    public boolean verifyIndices(int x, int y){
+        return x >= 0 && x < rows && y >= 0 && y < columns;
+    }
 
 }
 
