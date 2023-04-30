@@ -51,6 +51,7 @@ public class qMinefield {
      public Cell[][] getField(){  // if a 0 is found it will reveal all surrounding 0s and edges
         return this.field;
      }
+     public int getGuesses(){ return this.guesses;}
 
      public int getMinesRevealed(){
         return minesRevealed; //if game lost tells u how many you found
@@ -249,15 +250,39 @@ public class qMinefield {
      * @param y     The y value the user entered.
      */
     public void revealMines(int x, int y) {
-        Q1Gen queue = new Q1Gen<>(); Cell fieldPoint;
+        Q1Gen queue = new Q1Gen<>(); Cell fieldPoint; Random rand = new Random(); int r; int c;
         queue.add(this.field[x][y]);
         getMine(x, y, queue);
         while(queue.length() != 0){
             fieldPoint = (Cell) queue.remove();
             fieldPoint.setRevealed(true);
             if(fieldPoint.getStatus().equals("M")){
-                flags -= 1;
+                guesses += 1; minesRevealed += 1;
+                return;
             }
+            c = -1; r = -1;
+            while(!verifyIndices(r,c)) {
+                r = rand.nextInt(4);
+                switch (r) {
+                    case 1:
+                        r = x - 1;
+                        c = y;
+                        break;
+                    case 2:
+                        r = x + 1;
+                        c = y;
+                        break;
+                    case 3:
+                        c = y - 1;
+                        r = x;
+                        break;
+                    default:
+                        c = y + 1;
+                        r = x;
+                        break;
+                }
+            }
+            getMine(r, c, queue);
         }
 
     }

@@ -61,12 +61,14 @@ public class Main {
 
 
             while (!myField.gameOver() && !isOver) {
+                System.out.println("Flags left: " + (flags - myField.getGuesses()));
                 System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]]");
                 x = scan.nextInt();
                 y = scan.nextInt();
                 flag = scan.next();
                 while(!myField.verifyIndices(x,y)){
                     System.out.println("invalid guess.");
+                    System.out.println("Flags left: " + (flags - myField.getGuesses()));
                     System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]");
                     x = scan.nextInt(); y = scan.nextInt(); flag = scan.next();
                 }
@@ -102,6 +104,7 @@ public class Main {
       if (ans.equals("d")) {
         qMinefield myField = new qMinefield(x, y, flags);
         myField.printMinefield();
+        System.out.println("Flags left: " + (flags - myField.getGuesses()));
         System.out.println("enter your first guess: [row] [column]");
         x = scan.nextInt();
         y = scan.nextInt();
@@ -119,6 +122,7 @@ public class Main {
 
 
         while (!myField.gameOver() && !isOver) {
+            System.out.println("Flags left: " + (flags - myField.getGuesses()));
             System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]");
             x = scan.nextInt();
             y = scan.nextInt();
