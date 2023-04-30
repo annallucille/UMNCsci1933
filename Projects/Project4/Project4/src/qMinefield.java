@@ -198,21 +198,6 @@ public class qMinefield {
         }
     }
 
-    public void revealEdges(int x, int y){  //just like the real minesweeper this reveals all the numbers surrounding the 0 shape
-        int c = x; int d = y;
-        for(int i = -1; i <= 1; i++) { //im very proud of this looping
-            if(i == 0){continue;}
-            c += i;
-            if (verifyIndices(c,y) && !field[c][y].getRevealed() && !field[c][y].getStatus().equals("M")) {
-                field[c][y].setRevealed(true);
-            }
-            c = x; d += i;
-            if (verifyIndices(x,d) && !field[x][d].getRevealed() && !field[x][d].getStatus().equals("M")) {
-                field[x][d].setRevealed(true);
-            }
-            d = y;
-        }
-    }
 
     public void getNeighbors(int x, int y, Stack1Gen stack){
         int c = x; int z = y;
@@ -235,6 +220,22 @@ public class qMinefield {
             c = x; z = y;  //resets to og coordinates for next i loop
         }
 
+    }
+
+    public void revealEdges(int x, int y){  //just like the real minesweeper this reveals all the numbers surrounding the 0 shape
+        int c = x; int d = y;
+        for(int i = -1; i <= 1; i++) { //im very proud of this looping
+            if(i == 0){continue;}
+            c += i;
+            if (verifyIndices(c,y) && !field[c][y].getRevealed() && !field[c][y].getStatus().equals("M")) {
+                field[c][y].setRevealed(true);
+            }
+            c = x; d += i;
+            if (verifyIndices(x,d) && !field[x][d].getRevealed() && !field[x][d].getStatus().equals("M")) {
+                field[x][d].setRevealed(true);
+            }
+            d = y;
+        }
     }
 
 
