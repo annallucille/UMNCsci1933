@@ -6,12 +6,14 @@ public class qMinefield {
     Global Section
     */
     public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE_BRIGHT = "\u001b[34;1m";
-    public static final String ANSI_BLUE = "\u001b[35m";
+    public static final String ANSI_BLUE = "\u001b[36m";
+    public static final String ANSI_PURPLE = "\u001b[34;1m";
+    public static final String ANSI_PINK = "\u001b[35m";
     public static final String ANSI_RED_BRIGHT = "\u001b[31;1m";
     public static final String ANSI_RED = "\u001b[31m";
     public static final String ANSI_GREEN = "\u001b[32m";
     public static final String ANSI_GREY_BG = "\u001b[0m";
+    /**
     /**
      * Constructor
      * @param rows       Number of rows.
@@ -19,32 +21,39 @@ public class qMinefield {
      * @param flags      Number of flags, should be equal to mines
      */
 
-    private  int[][] intField;
+    private  int[][] intField; //int representation of field, used for calculating mines
     private Cell[][] field;
 
-    private int[][] mines;
+    private int[][] mines; // keeps track of mine coordinates top make revealMines() easier.
     private int rows;
     private int columns;
-    private int guesses = 0;
-    private int minesRevealed = 0;
-    private int flags;
+    private int guesses = 0; // keeps track of flags placed
+    private int minesRevealed = 0; // keeps track of mines found with flags
+    private int flags; // amount of bombs
+
+
+
 
     public qMinefield(int rows, int columns, int flags) {
         this.rows = rows;
         this.columns = columns;
         this.field = new Cell[rows][columns];
-        this.mines = new int[flags][2];
+        this.mines = new int[flags][2]; //init mine coordinates
         for(int i = 0; i < rows; i++){
             for(int j = 0; j < columns; j++) {
-                field[i][j] = new Cell( false, "-");
+                field[i][j] = new Cell( false, "-"); //idk it made me do this
             }
         }
         this.intField = new int[rows][columns];
         this.flags = flags;
 
     }
-     public Cell[][] getField(){
+     public Cell[][] getField(){  // if a 0 is found it will reveal all surrounding 0s and edges
         return this.field;
+     }
+
+     public int getMinesRevealed(){
+        return minesRevealed; //if game lost tells u how many you found
      }
     /**
      * evaluateField
@@ -55,12 +64,12 @@ public class qMinefield {
         Stack1Gen stack = new Stack1Gen<>();
         int x; int y; int[] temp = new int [2];
         for(int i = 0; i < this.flags; i++){
-            temp[0] = mines[i][0]; temp[1] = this.mines[i][1];
+            temp[0] = mines[i][0]; temp[1] = this.mines[i][1]; //push(x); push(y); => y = pop(); x = pop();
             evaluateHelper(temp, stack, i);
         }
         System.out.println("----");
         while(!stack.isEmpty()){
-             y = (int) stack.pop();
+             y = (int) stack.pop();  //push(x); push(y); => y = pop(); x = pop();
              x = (int) stack.pop();
             intField[x][y] += 1;
         }
@@ -68,23 +77,23 @@ public class qMinefield {
 
     }
 
-    public void convert(){
+    public void convert(){ //convert() is its own function because it is used to convert my integer representation of the field to a Cell representation
         for(int i = 0; i < rows; i++ ){
             for(int j = 0; j < columns; j++) {
-                if(!field[i][j].getStatus().equals("M")) {
-                    field[i][j].setStatus(Integer.toString(intField[i][j]));
-                }
+                if(!field[i][j].getStatus().equals("M")) { field[i][j].setStatus(Integer.toString(intField[i][j]));}
+                else{ intField[i][j] = 1000;}  //sets value to be something impossible so i can remove flags later
             }
         }
     }
 
+
     public void evaluateHelper(int[] arr, Stack1Gen stack, int k){
-        for(int i = -1; i <= 1; i++){
+        for(int i = -1; i <= 1; i++){  //im very proud of this looping
             arr[0] += i;
             for(int j = - 1; j <= 1; j++){
                 arr[1] += j;
                 if(verifyIndices(arr[0], arr[1])){
-                    stack.push(arr[0]);
+                    stack.push(arr[0]);  //push(x); push(y); => y = pop(); x = pop();
                     stack.push(arr[1]);
                     arr[1] = this.mines[k][1];
                 }
@@ -108,7 +117,7 @@ public class qMinefield {
         for(int i = 0; i < mines; i++){
             Random rand = new Random();
             int row = rand.nextInt(this.rows); int column = rand.nextInt(this.columns);
-            while(field[row][column].getStatus().equals("M")  || column == y || row == x) {
+            while(field[row][column].getStatus().equals("M")  || column == y || row == x) { //cant place mines on first guess
                 row = rand.nextInt(this.rows);
                 column = rand.nextInt(this.columns);
             }
@@ -129,7 +138,7 @@ public class qMinefield {
      */
     public boolean guess(int x, int y, boolean flag) {
         if (flag) {
-            if(guesses == flags){
+            if(guesses == flags){ //instant game over if no flags left
                 gameOver();
             }
             if(guesses < flags) {
@@ -137,7 +146,7 @@ public class qMinefield {
                 if (field[x][y].getStatus().equals("M")) {
                     field[x][y].setStatus("F");
                     field[x][y].setRevealed(true);
-                    minesRevealed += 1;
+                    minesRevealed += 1; // +1 mine found
                     return false;
                 }
                 field[x][y].setStatus("F");
@@ -147,15 +156,13 @@ public class qMinefield {
         }
         if(field[x][y].getStatus().equals("0")) {
             field[x][y].setRevealed(true);
-            revealZeroes(x,y);
+            revealZeroes(x,y);  //reveals all 0s if a 0 is found
             return false;
         }
         if(field[x][y].getStatus().equals("M")) {
-            gameOver();
-            return true;
+            return true;  //gives an instant game over
         }
         field[x][y].setRevealed(true);
-        revealEdges(x,y);
         return false;
     }
 
@@ -166,21 +173,7 @@ public class qMinefield {
      * @return boolean Return false if game is not over and squares have yet to be revealed, otheriwse return true.
      */
     public boolean gameOver() {
-        if(flags == guesses){
-            return true;
-        }
-        if(minesRevealed == flags){
-            return true;
-        }
-
-        for(int i = 0; i < this.rows; i++){
-            for(int j = 0; j < this.columns; j++){
-                if(field[i][j].getStatus().equals("M") && !field[i][j].getRevealed()){
-                    return false;
-                }
-            }
-        }
-        return true;
+        return flags == guesses || minesRevealed == flags;
     }
 
     /**
@@ -200,45 +193,46 @@ public class qMinefield {
         while(!stack.isEmpty()){
             y = (int) stack.pop(); x = (int) stack.pop();
             this.field[x][y].setRevealed(true);
-            revealEdges(x,y);
             getNeighbors(x,y,stack);
+            revealEdges(x,y);  // loops through to reveal the edges like real mine sweeper
         }
     }
 
-    public void revealEdges(int x, int y){
+    public void revealEdges(int x, int y){  //just like the real minesweeper this reveals all the numbers surrounding the 0 shape
         int c = x; int d = y;
-        for(int i = -1; i <= 1; i++) {
+        for(int i = -1; i <= 1; i++) { //im very proud of this looping
             if(i == 0){continue;}
             c += i;
-            if (!field[c][y].getRevealed() && !field[c][y].getStatus().equals("M")) {
+            if (verifyIndices(c,y) && !field[c][y].getRevealed() && !field[c][y].getStatus().equals("M")) {
                 field[c][y].setRevealed(true);
             }
-            d += i;
-            if (!field[x][d].getRevealed() && !field[x][d].getStatus().equals("M")) {
+            c = x; d += i;
+            if (verifyIndices(x,d) && !field[x][d].getRevealed() && !field[x][d].getStatus().equals("M")) {
                 field[x][d].setRevealed(true);
             }
-            d = y; c = x;
+            d = y;
         }
     }
 
     public void getNeighbors(int x, int y, Stack1Gen stack){
         int c = x; int z = y;
-        for(int i = -1; i <= 1; i++){
-            c += i;
+        for(int i = -1; i <= 1; i++){   //im very proud of this looping
+            if(i == 0){ continue; }  // doesnt include square guessed
+            c += i;  //checks left and right neighbors
             if(verifyIndices(c, y)) {
                 if (this.field[c][y].getStatus().equals("0") && !this.field[c][y].getRevealed()) {
                     stack.push(c);
                     stack.push(y);
                 }
             }
-            z += i;
+            z += i;  // check up and down neighbors
             if(verifyIndices(x, z)) {
                 if(this.field[x][z].getStatus().equals("0") && !this.field[x][z].getRevealed()) {
                     stack.push(x);
                     stack.push(z);
                 }
             }
-            c = x; z = y;
+            c = x; z = y;  //resets to og coordinates for next i loop
         }
 
     }
@@ -254,9 +248,9 @@ public class qMinefield {
      * @param y     The y value the user entered.
      */
     public void revealMines(int x, int y) {
-        Q1Gen queue = new Q1Gen<>(); int[] arr = {x, y}; Cell fieldPoint;
+        Q1Gen queue = new Q1Gen<>(); Cell fieldPoint;
         queue.add(this.field[x][y]);
-        getMine(arr, queue);
+        getMine(x, y, queue);
         while(queue.length() != 0){
             fieldPoint = (Cell) queue.remove();
             fieldPoint.setRevealed(true);
@@ -267,21 +261,24 @@ public class qMinefield {
 
     }
 
-    public void getMine(int[] arr, Q1Gen queue){
-        int x = arr[0]; int y = arr[1];
-        for(int i = -1; i < 1; i++){
+    public void getMine(int c, int d, Q1Gen queue){
+        int x = c; int y = d;
+        for(int i = -1; i <= 1; i++){
             x += i;
-            for(int j = -1; j < 1; j++){
-                y += i;
-                if(verifyIndices(x,y)){
-                    queue.add(field[x][y]);
-                }
+            if(verifyIndices(x,y)){
+                queue.add(field[x][y]);
                 if(field[x][y].getStatus().equals("M")){
                     return;
                 }
-                y = arr[1] ;
             }
-            x = arr[0];
+            x = c; y += i;
+            if(verifyIndices(x,y)){
+                queue.add(field[x][y]);
+                if(field[x][y].getStatus().equals("M")){
+                    return;
+                }
+            }
+            y = d;
         }
 
     }
@@ -296,35 +293,35 @@ public class qMinefield {
     public void printMinefield() {
         String s  = "";
         for(int i = 0; i< rows + 1; i++) {
-            if(i == 0){ s+= " ";}
-            else{
-                s += Integer.toString(i - 1) + " ";}
+            if(i == 0){ s+= "  ";}
+            else if(i - 1 < 10){s += "0" + Integer.toString(i - 1) + " ";} //im  just proud of these, they made the game line up nicely
+            else {s += Integer.toString(i - 1) + " ";}
             for (int j = 0; j < columns; j++) {
-                if(i == 0) { s += Integer.toString(j) + " "; }
+                if (i == 0) {
+                    if (j < 10) { s += "0" + Integer.toString(j) + " "; }
+                    else { s += Integer.toString(j) + " ";}
+                }
                 else {
-                    if(field[i-1][j].getRevealed()){
+                    if(field[i-1][j].getRevealed()){ //it took me forever to get this to work properly
                         String z = field[i - 1][j].getStatus();
-                        if (z.equals("0")) {
-                            s += ANSI_BLUE+ "0" +  ANSI_GREY_BG + " ";
+                        switch (z) {  //switch statements are now my one true love
+                            case "0":   s += ANSI_PINK + "0" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "1":   s += ANSI_PURPLE + "1" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "2":   s += ANSI_BLUE + "2" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "M":   s += ANSI_RED + "M" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "F":   s += ANSI_YELLOW + "F" + ANSI_GREY_BG + "  ";
+                                break;
+                            default:    s += ANSI_GREEN + field[i - 1][j].getStatus() + ANSI_GREY_BG + "  "; //any other number will appear in green
+                                break;
                         }
-                        if (field[i - 1][j].getStatus().equals("1")) {
-                            s += ANSI_BLUE_BRIGHT + "1" +  ANSI_GREY_BG + " ";
-                        }
-                        if(z.equals("2")){
-                            s += ANSI_GREEN + "2" +  ANSI_GREY_BG + " ";
-                        }
-                        if(z.equals("3")){
-                            s += ANSI_YELLOW + "3" +  ANSI_GREY_BG + " ";
-                        }
-                        if(z.equals("M")){
-                            s += ANSI_RED_BRIGHT+ "M" +  ANSI_GREY_BG + " ";
-                        }
-                        if(z.equals("F")){
-                            s += ANSI_RED + "F" +  ANSI_GREY_BG + " ";
-                        }
+
                     }
                     else {
-                        s += field[i - 1][j].getStatus() + " ";
+                        s += field[i - 1][j].getStatus() + "  ";
                     }
                 }
             }
@@ -338,39 +335,33 @@ public class qMinefield {
      *
      * @return String The string that is returned only has the squares that has been revealed to the user or that the user has guessed.
      */
-    public String toString() {
-        String s = " ";
+    public String toString() { //im really really proud of how i did this
+        String s = "  ";
         for(int i = 0; i <= rows; i++){
             if(i == 0){ s+= " ";}
-            else{
-            s += Integer.toString(i - 1) + " ";}
-            for(int j = 0; j < columns; j++){
-                if(i == 0) { s += Integer.toString(j) + " "; }
-                else if(field[i-1][j].equals(null)){
-                    s += "-";
-                }
-                else if(field[i-1][j].getRevealed()) {
+            else if(i - 1 < 10){s += "0" + Integer.toString(i - 1) + " ";}
+            else{s += Integer.toString(i - 1) + " ";}
+            for(int j = 0; j < columns; j++) {
+                if (i == 0) {
+                    if (j < 10) { s += "0" + Integer.toString(j) + " "; }
+                    else { s += Integer.toString(j) + " "; }
+                } else if (field[i - 1][j].getRevealed()) {
                     String z = field[i - 1][j].getStatus();
-                    if (z.equals("0")) {
-                        s += ANSI_BLUE+ "0" +  ANSI_GREY_BG + " ";
+                    switch (z) {
+                        case "0":   s += ANSI_PINK + "0" + ANSI_GREY_BG + "  ";
+                                    break;
+                        case "1":   s += ANSI_PURPLE + "1" + ANSI_GREY_BG + "  ";
+                                    break;
+                        case "2":   s += ANSI_BLUE + "2" + ANSI_GREY_BG + "  ";
+                                    break;
+                        case "M":   s += ANSI_RED + "M" + ANSI_GREY_BG + "  ";
+                                    break;
+                        case "F":   s += ANSI_YELLOW + "F" + ANSI_GREY_BG + "  ";
+                                    break;
+                        default:    s += ANSI_GREEN + field[i - 1][j].getStatus() + ANSI_GREY_BG + "  "; //any other number will appear in green
+                                    break;
                     }
-                    if (field[i - 1][j].getStatus().equals("1")) {
-                        s += ANSI_BLUE_BRIGHT + "1" +  ANSI_GREY_BG + " ";
-                    }
-                    if(z.equals("2")){
-                        s += ANSI_GREEN + "2" +  ANSI_GREY_BG + " ";
-                    }
-                    if(z.equals("3")){
-                        s += ANSI_YELLOW + "3" +  ANSI_GREY_BG + " ";
-                    }
-                    if(z.equals("M")){
-                        s += ANSI_RED_BRIGHT+ "M" +  ANSI_GREY_BG + " ";
-                    }
-                    if(z.equals("F")){
-                        s += ANSI_RED + "F" +  ANSI_GREY_BG + " ";
-                    }
-                }
-                else {s += "- ";}
+                } else { s += "-  ";}
             }
             s += "\n";
 
@@ -378,17 +369,75 @@ public class qMinefield {
         return s;
     }
 
+    public void printEnd(){
+        String s  = "";
+        revealBoard();
+        for(int i = 0; i< rows + 1; i++) {
+            if(i == 0){ s+= "  ";}
+            else if(i - 1 < 10){s += "0" + Integer.toString(i - 1) + " ";} //im  just proud of these, they made the game line up nicely
+            else {s += Integer.toString(i - 1) + " ";}
+            for (int j = 0; j < columns; j++) {
+                if (i == 0) {
+                    if (j < 10) { s += "0" + Integer.toString(j) + " "; }
+                    else { s += Integer.toString(j) + " ";}
+                }
+                else {
+                    String z = field[i - 1][j].getStatus();
+                    switch (z) {  //switch statements are now my one true love
+                            case "0":   s += ANSI_PINK + "0" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "1":   s += ANSI_PURPLE + "1" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "2":   s += ANSI_BLUE + "2" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "M":   s += ANSI_RED + "M" + ANSI_GREY_BG + "  ";
+                                break;
+                            case "F":{  if(intField[i -1][j] == 1000){   // tells you which ones you got correct by making them red
+                                        s += ANSI_RED_BRIGHT + "F" + ANSI_GREY_BG + "  ";
+                                        break;
+                                        }
+                                        s += ANSI_YELLOW + "F" + ANSI_GREY_BG + "  ";
+                                        break;
+                                    }
+                            default:    s += ANSI_GREEN + field[i - 1][j].getStatus() + ANSI_GREY_BG + "  "; //any other number will appear in green
+                                break;
+                        }
+
+                    }
+            }
+            s += "\n";
+        }
+        System.out.println(s);
+    }
 
 
-    public void revealBoard(){
+
+
+    public void revealBoard(){ //shows you the board after :) thought it was a cool feature to have
         for(int i = 0; i < rows; i++){
             for(int j = 0; j< columns; j++){
                 field[i][j].setRevealed(true);
             }
         }
     }
-    public boolean verifyIndices(int x, int y){
+    public boolean verifyIndices(int x, int y){ //Since there were so many verifications of bounds i made a helper function that compares x and y coordinates to the bounds of the array
         return x >= 0 && x < rows && y >= 0 && y < columns;
+    }
+
+    public boolean flagRemove(int x, int y){
+        if(field[x][y].getStatus().equals("F")){
+            if(intField[x][y] == 1000){    //value set for mines
+                field[x][y].setStatus("M");
+                field[x][y].setRevealed(false);
+                guesses -= 1;  //updates to remove guess from total number of guesses
+                minesRevealed -= 1;   //updates the amount of mines found to be one less
+                return true;
+            }
+            field[x][y].setStatus(Integer.toString(intField[x][y]));
+            guesses -= 1; //updates to remove guess from total number of guesses
+            return true;
+        }
+        return false;  //if no flag program will reprompt user for coordinates and flag value
     }
 
 }

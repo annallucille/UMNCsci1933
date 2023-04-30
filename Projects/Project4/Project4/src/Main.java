@@ -7,6 +7,7 @@ public class Main {
         int flags = 0;
         String flag;
         boolean isOver = false;
+        boolean flagRm;
         Scanner scan = new Scanner(System.in);
         System.out.println("Game Mode: (e/m/h)");
         String ans = scan.next();
@@ -40,7 +41,8 @@ public class Main {
 
         if (ans.equals("y")) {
             qMinefield myField = new qMinefield(x, y, flags);
-            System.out.println("enter your first guess: [x] [y]");
+            myField.printMinefield();
+            System.out.println("enter your first guess: [row] [column]");
             x = scan.nextInt();
             y = scan.nextInt();
 
@@ -59,20 +61,24 @@ public class Main {
 
 
             while (!myField.gameOver() && !isOver) {
-                System.out.println("enter your guess: [x] [y] [flag (y/n)]");
+                System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]]");
                 x = scan.nextInt();
                 y = scan.nextInt();
                 flag = scan.next();
                 while(!myField.verifyIndices(x,y)){
                     System.out.println("invalid guess.");
-                    System.out.println("enter your guess: [x] [y] [flag (y/n)]");
-                    x = scan.nextInt();
-                    y = scan.nextInt();
-                    flag = scan.next();
+                    System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]");
+                    x = scan.nextInt(); y = scan.nextInt(); flag = scan.next();
                 }
 
                 if (flag.equals("y")) {
                     isOver = myField.guess(x, y, true);
+                }
+                else if(flag.equals("r")){
+                    flagRm = myField.flagRemove(x,y);
+                    if(!flagRm){
+                        System.out.println("Flag does not exist. Please go again");
+                    }
                 }
                 else {
                     isOver = myField.guess(x, y, false);
@@ -85,17 +91,18 @@ public class Main {
 
             if(isOver){
                 System.out.println("Nice try!");
+                System.out.println("Mines Found: " + myField.getMinesRevealed());
             }
             else{
                 System.out.println("Great Work!");
             }
-            myField.revealBoard();
-            myField.printMinefield();
+            myField.printEnd();
         }
 
       if (ans.equals("d")) {
         qMinefield myField = new qMinefield(x, y, flags);
-        System.out.println("enter your first guess: [x] [y]");
+        myField.printMinefield();
+        System.out.println("enter your first guess: [row] [column]");
         x = scan.nextInt();
         y = scan.nextInt();
         myField.createMines(x, y, flags);
@@ -112,12 +119,18 @@ public class Main {
 
 
         while (!myField.gameOver() && !isOver) {
-            System.out.println("enter your guess: [x] [y] [flag (y/n)]");
+            System.out.println("enter your guess: [row] [column] [flag (y/n/r (remove))]");
             x = scan.nextInt();
             y = scan.nextInt();
-
-            if (scan.next().equals("y")) {
+            flag = scan.next();
+            if (flag.equals("y")) {
                 isOver = myField.guess(x, y, true);
+            }
+            else if(flag.equals("r")){
+                flagRm = myField.flagRemove(x,y);
+                if(!flagRm){
+                    System.out.println("Flag does not exist. Please go again");
+                }
             }
             else {
                 isOver = myField.guess(x, y, false);
@@ -125,6 +138,14 @@ public class Main {
             myField.printMinefield();
 
         }
+        if(isOver || myField.getMinesRevealed() != flags){
+            System.out.println("Nice try!");
+            System.out.println("Mines Found: " + myField.getMinesRevealed());
+        }
+        else{
+            System.out.println("Great Work!");
+        }
+        myField.printEnd();
       }
     }
 
