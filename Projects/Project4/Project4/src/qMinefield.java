@@ -460,6 +460,7 @@ public class qMinefield {
                 return true;
             }
             field[x][y].setStatus(Integer.toString(intField[x][y]));
+            field[x][y].setRevealed(false);
             guesses -= 1; //updates to remove guess from total number of guesses
             return true;
         }
